@@ -60,6 +60,30 @@ function post(url, jar, form) {
   return request(op).then(function(res) {return res[0];});
 }
 
+function postQs(url, jar, form, qs) {
+  // I'm still confused about this
+  if(getType(qs) === "Object") {
+    for(var prop in qs) {
+      if(qs.hasOwnProperty(prop) && getType(qs[prop]) === "Object") {
+        qs[prop] = JSON.stringify(qs[prop]);
+      }
+    }
+  }
+
+  var op = {
+    headers: getHeaders(url),
+    timeout: 60000,
+    url: url,
+    method: "POST",
+    qs: qs,
+    form: form,
+    jar: jar,
+    gzip: true
+  };
+
+  return request(op).then(function(res) {return res[0];});
+}
+
 function postFormData(url, jar, form, qs) {
   var headers = getHeaders(url);
   headers['Content-Type'] = 'multipart/form-data';
@@ -586,9 +610,14 @@ function makeDefaults(html, userID, ctx) {
     return postFormData(url, jar, mergeWithDefaults(form), mergeWithDefaults(qs));
   }
 
+  function postQsWithDefaults(url, jar, qs) {
+    return postQs(url, jar, mergeWithDefaults({}), mergeWithDefaults(qs));
+  }
+
   return {
     get: getWithDefaults,
     post: postWithDefaults,
+    postQs: postQsWithDefaults,
     postFormData: postFormDataWithDefault,
   };
 }
@@ -790,6 +819,7 @@ module.exports = {
   isReadableStream: isReadableStream,
   get: get,
   post: post,
+  postQs: postQs,
   postFormData: postFormData,
   generateThreadingID: generateThreadingID,
   generateOfflineThreadingID: generateOfflineThreadingID,

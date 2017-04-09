@@ -80,6 +80,7 @@ function buildAPI(globalOptions, html, jar) {
     'changeThreadColor',
     'changeThreadEmoji',
     'changeNickname',
+    'createEvent',
     'createPoll',
     'deleteMessage',
     'deleteThread',
